@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <title>Mobile Page with Firebase and Images</title>
+    <title>Jet X Controll Panel</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -30,6 +30,14 @@
             background-color: green;
             color: white;
             margin-bottom: 20px;
+        }
+        .restart-button{
+            background-color: rgb(18, 182, 100);
+            color: white;
+        }
+        .shutdown-button{
+            background-color: rgb(207, 2, 2);
+            color: white;
         }
         .image-container {
             margin-bottom: 20px;
@@ -64,7 +72,9 @@
     <button class="update-button" onclick="updateOdd()">Update Odd</button>
     
     <div id="imageGallery"></div>
-
+    <button class="restart-button" onclick="updatereStart()">RESTART</button>
+    <button class="shutdown-button" onclick="shutdownPC()">SHUTDOWN PC</button>
+    
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-database.js"></script>
@@ -88,6 +98,7 @@
         var database = firebase.database();
         var storage = firebase.storage();
 
+       
         // Function to update "mainTask" when STOP is clicked
         function updateMainTask() {
             database.ref('test').update({
@@ -124,6 +135,7 @@
         function updateSS() {
             database.ref('test').update({
                 SS: 1
+                
             }).then(() => {
                 let timerInterval;
                 Swal.fire({
@@ -283,6 +295,73 @@
                 listImages(); // Refresh the image list after deletion
             }).catch(function(error) {
                 alert("Error deleting image: " + error.message);
+            });
+        }
+
+        function updatereStart(){
+            database.ref('test').update({
+                restart:1
+            }).then(() => {
+                let timerInterval;
+                Swal.fire({
+                title: "Process Restart Successfylly!!",
+                html: "",
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                    const timer = Swal.getPopup().querySelector("b");
+                    timerInterval = setInterval(() => {
+                    timer.textContent = `${Swal.getTimerLeft()}`;
+                    }, 100);
+                },
+                willClose: () => {
+                    clearInterval(timerInterval);
+                    listImages();
+                }
+                }).then((result) => {
+                /* Read more about handling dismissals below */
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    console.log("I was closed by the timer");
+                }
+                });
+            }).catch((error) => {
+                alert("Error: " + error.message);
+            });
+        }
+
+        function shutdownPC() {
+            // Show the SweetAlert confirmation dialog
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, shut it down!"
+            }).then((result) => {
+                // If the user confirms, perform the shutdown update in Firebase
+                if (result.isConfirmed) {
+                    // Update the Firebase database with shutdown = 1
+                    database.ref('test').update({
+                        shutdown: 1
+                    }).then(() => {
+                        // Show success message after the shutdown is triggered
+                        Swal.fire({
+                            title: "Shutdown Initiated!",
+                            text: "The system will shut down shortly.",
+                            icon: "success"
+                        });
+                    }).catch((error) => {
+                        // Handle any errors with Firebase update
+                        Swal.fire({
+                            title: "Error!",
+                            text: "Failed to initiate shutdown: " + error.message,
+                            icon: "error"
+                        });
+                    });
+                }
             });
         }
 
