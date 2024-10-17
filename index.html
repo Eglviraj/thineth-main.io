@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Mobile Page with Firebase and Images</title>
     <style>
         body {
@@ -51,9 +52,7 @@
 </head>
 <body>
 
-    <h1>JetX Controll Pannel</h1>
-
-    
+    <h1>JetX Control Panel</h1>
 
     <button class="stop-button" onclick="updateMainTask()">STOP</button>
     <button class="take-button" onclick="updateSS()">TAKE SCREEN SHOT</button>
@@ -63,7 +62,9 @@
 
     <input type="text" id="textField2" placeholder="Enter odd value">
     <button class="update-button" onclick="updateOdd()">Update Odd</button>
+    
     <div id="imageGallery"></div>
+
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.3.3/firebase-database.js"></script>
@@ -73,13 +74,13 @@
         // Your web app's Firebase configuration
         var firebaseConfig = {
             apiKey: "AIzaSyAjMTH05bxoCLRrltq31BaGsAHKQ8_aCcM",
-  authDomain: "jet-x-d9e7e.firebaseapp.com",
-  databaseURL: "https://jet-x-d9e7e-default-rtdb.firebaseio.com",
-  projectId: "jet-x-d9e7e",
-  storageBucket: "jet-x-d9e7e.appspot.com",
-  messagingSenderId: "1063204966889",
-  appId: "1:1063204966889:web:2f3feb77c31f72b812fb78",
-  measurementId: "G-3S4GF0BTSF"
+            authDomain: "jet-x-d9e7e.firebaseapp.com",
+            databaseURL: "https://jet-x-d9e7e-default-rtdb.firebaseio.com",
+            projectId: "jet-x-d9e7e",
+            storageBucket: "jet-x-d9e7e.appspot.com",
+            messagingSenderId: "1063204966889",
+            appId: "1:1063204966889:web:2f3feb77c31f72b812fb78",
+            measurementId: "G-3S4GF0BTSF"
         };
         
         // Initialize Firebase
@@ -92,18 +93,65 @@
             database.ref('test').update({
                 mainTask: 1
             }).then(() => {
-                alert("mainTask updated to 1");
+                let timerInterval;
+                Swal.fire({
+                title: "Softwer STOPED!",
+                html: "",//"I will close in <b></b> milliseconds.",
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                    const timer = Swal.getPopup().querySelector("b");
+                    timerInterval = setInterval(() => {
+                    timer.textContent = `${Swal.getTimerLeft()}`;
+                    }, 100);
+                },
+                willClose: () => {
+                    clearInterval(timerInterval);
+                }
+                }).then((result) => {
+                /* Read more about handling dismissals below */
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    console.log("I was closed by the timer");
+                }
+                });
             }).catch((error) => {
                 alert("Error: " + error.message);
             });
         }
 
-        // Function to update "SS" when TAKE is clicked
+        // Function to update "SS" when TAKE is clicked and recall listImages after 5 seconds
         function updateSS() {
             database.ref('test').update({
                 SS: 1
             }).then(() => {
-                alert("SS updated to 1");
+                let timerInterval;
+                Swal.fire({
+                title: "Screen Shot Uplading!",
+                html: "Image will apear in <b></b> milliseconds.",
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                    const timer = Swal.getPopup().querySelector("b");
+                    timerInterval = setInterval(() => {
+                    timer.textContent = `${Swal.getTimerLeft()}`;
+                    }, 100);
+                },
+                willClose: () => {
+                    clearInterval(timerInterval);
+                    listImages();
+                }
+                }).then((result) => {
+                /* Read more about handling dismissals below */
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    console.log("I was closed by the timer");
+                }
+                });
+                // Delay for 5 seconds before recalling listImages()
+                       /* setTimeout(() => {
+                            listImages(); // Automatically call the function after 5 seconds
+                        }, 4000); // 5000 milliseconds = 5 seconds*/
             }).catch((error) => {
                 alert("Error: " + error.message);
             });
@@ -116,7 +164,28 @@
                 database.ref('test').update({
                     cash: cashValue
                 }).then(() => {
-                    alert("Cash updated to " + cashValue);
+                    let timerInterval;
+                    Swal.fire({
+                    title: "Cash Updated ! amount : " + cashValue,
+                    html: "",//"I will close in <b></b> milliseconds.",
+                    timer: 2000,
+                    timerProgressBar: true,
+                    didOpen: () => {
+                        Swal.showLoading();
+                        const timer = Swal.getPopup().querySelector("b");
+                        timerInterval = setInterval(() => {
+                        timer.textContent = `${Swal.getTimerLeft()}`;
+                        }, 100);
+                    },
+                    willClose: () => {
+                        clearInterval(timerInterval);
+                    }
+                    }).then((result) => {
+                    /* Read more about handling dismissals below */
+                    if (result.dismiss === Swal.DismissReason.timer) {
+                        console.log("I was closed by the timer");
+                    }
+                    });
                 }).catch((error) => {
                     alert("Error: " + error.message);
                 });
@@ -132,7 +201,28 @@
                 database.ref('test').update({
                     odd: oddValue
                 }).then(() => {
-                    alert("Odd updated to " + oddValue);
+                    let timerInterval;
+                Swal.fire({
+                title: "Odd Updated to : " + oddValue,
+                html: "",//"I will close in <b></b> milliseconds.",
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: () => {
+                    Swal.showLoading();
+                    const timer = Swal.getPopup().querySelector("b");
+                    timerInterval = setInterval(() => {
+                    timer.textContent = `${Swal.getTimerLeft()}`;
+                    }, 100);
+                },
+                willClose: () => {
+                    clearInterval(timerInterval);
+                }
+                }).then((result) => {
+                /* Read more about handling dismissals below */
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    console.log("I was closed by the timer");
+                }
+                });
                 }).catch((error) => {
                     alert("Error: " + error.message);
                 });
